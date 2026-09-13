@@ -1,0 +1,99 @@
+/* ===========================================================================
+   SENTINEL design tokens.
+
+   The palette is deliberately not the blue/cyan that most security dashboards
+   reach for. Colour here is semantic, never decorative: a reader should be
+   able to name what a colour means without a legend. Every status is also
+   carried by a label and a shape, so the interface survives greyscale and
+   colour-vision differences.
+   =========================================================================== */
+
+:root {
+  /* --- surfaces: three depths, no more. Layering is what makes a dark
+         interface readable; gradients are what makes it look cheap. --- */
+  --obsidian: #070807;
+  --carbon: #10130f;
+  --elevated: #171a15;
+
+  /* --- semantic signal colours --- */
+  --acid: #c7f000;        /* navigation, active intelligence, selection      */
+  --gold: #d4a72c;        /* important operational signal, needs attention   */
+  --hazard: #ff8a1f;      /* degraded                                        */
+  --critical: #ff3b30;    /* critical incident, offline infrastructure       */
+  --operational: #76e06f; /* healthy, contained, resolved                    */
+  --violet: #9b6cff;      /* threat intelligence, correlation                */
+
+  /* --- text --- */
+  --text: #e8e9e4;
+  --muted: #8a8f85;
+
+  /* --- derived tints. Kept as tokens so a severity tint is never
+         hand-mixed at the call site and drifting between components. --- */
+  --acid-dim: rgba(199, 240, 0, 0.12);
+  --gold-dim: rgba(212, 167, 44, 0.14);
+  --hazard-dim: rgba(255, 138, 31, 0.14);
+  --critical-dim: rgba(255, 59, 48, 0.14);
+  --operational-dim: rgba(118, 224, 111, 0.14);
+  --violet-dim: rgba(155, 108, 255, 0.14);
+
+  /* --- structure --- */
+  --hairline: rgba(232, 233, 228, 0.09);
+  --hairline-strong: rgba(232, 233, 228, 0.18);
+  --grid: rgba(232, 233, 228, 0.028);
+
+  /* --- radii: small and technical, not consumer-app rounded --- */
+  --r-xs: 2px;
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 10px;
+
+  /* --- spacing --- */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-10: 40px;
+
+  /* --- type: one sans for the interface, one mono for telemetry --- */
+  --font-ui: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", ui-monospace, "Cascadia Mono",
+    Consolas, monospace;
+
+  --t-micro: 10px;
+  --t-label: 11px;
+  --t-body: 13px;
+  --t-lead: 15px;
+  --t-title: 19px;
+  --t-display: 28px;
+
+  /* --- motion. Every duration is referenced, never inlined, so reduced
+         motion can flatten all of them from one place. --- */
+  --m-fast: 120ms;
+  --m-base: 220ms;
+  --m-slow: 420ms;
+  --m-ease: cubic-bezier(0.2, 0.6, 0.2, 1);
+}
+
+/* Severity is a scale, so it gets its own token set rather than components
+   deciding which of the six signal colours a severity maps to. */
+:root {
+  --sev-low: var(--operational);
+  --sev-medium: var(--gold);
+  --sev-high: var(--hazard);
+  --sev-critical: var(--critical);
+  --sev-low-dim: var(--operational-dim);
+  --sev-medium-dim: var(--gold-dim);
+  --sev-high-dim: var(--hazard-dim);
+  --sev-critical-dim: var(--critical-dim);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --m-fast: 1ms;
+    --m-base: 1ms;
+    --m-slow: 1ms;
+  }
+}
