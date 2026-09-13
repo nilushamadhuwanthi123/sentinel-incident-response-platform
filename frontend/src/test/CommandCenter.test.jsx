@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { render, screen, act } from '@testing-library/react';
+import { render, screen, act, within } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import { CommandCenter } from '../pages/CommandCenter.jsx';
 
@@ -169,9 +169,12 @@ describe('CommandCenter', () => {
   });
 
   it('names every service in the topology, not only the ones that changed', () => {
-    mount();
-    expect(screen.getByText('Auth Service')).toBeInTheDocument();
-    expect(screen.getByText('Database')).toBeInTheDocument();
+    // Service names appear both on the topology map and in the health
+    // strip, so the query is scoped to the strip rather than loosened.
+    const { view } = mount();
+    const strip = view.container.querySelector('.strip');
+    expect(within(strip).getByText('Auth Service')).toBeInTheDocument();
+    expect(within(strip).getByText('Database')).toBeInTheDocument();
   });
 
   it('closes the socket when it unmounts', () => {
