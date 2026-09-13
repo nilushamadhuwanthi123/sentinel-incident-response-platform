@@ -13,7 +13,19 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
-    server: { port: 5173 },
+    // GitHub Pages serves the project from a subpath. Setting it from an
+    // environment variable rather than hard-coding it means a build for any
+    // other host — or a local preview — is not silently broken by a base
+    // path it does not have.
+    base: process.env.VITE_BASE ?? '/',
+    server: {
+      port: 5173,
+      // The simulation module lives in server/ and is imported by the
+      // standalone client, so the dev server needs to be allowed to read
+      // one level above the project root. One simulator, two runtimes —
+      // the alternative is a copy that drifts.
+      fs: { allow: ['..'] },
+    },
     test: {
       environment: 'jsdom',
       globals: true,
