@@ -1,0 +1,175 @@
+/* ===========================================================================
+   Response console.
+
+   Cost is never smaller than benefit in the visual hierarchy. A layout that
+   shows "-23" large and "cannot be undone" small is a layout that encourages
+   the mistake.
+   =========================================================================== */
+
+.resp {
+  display: grid;
+  grid-template-columns: 1.3fr minmax(260px, 1fr);
+  gap: var(--s-5);
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .resp { grid-template-columns: 1fr; }
+}
+
+.resp-rationale {
+  margin: 0 0 var(--s-4);
+  padding: var(--s-3);
+  border-left: 2px solid var(--acid);
+  background: var(--acid-dim);
+  font-size: var(--t-body);
+  max-width: 70ch;
+}
+
+.resp-options { list-style: none; margin: 0; padding: 0; }
+.resp-option {
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-sm);
+  padding: var(--s-3);
+  margin-bottom: var(--s-2);
+  transition: border-color var(--m-fast) var(--m-ease);
+}
+.resp-option.is-on {
+  border-color: var(--acid);
+  background: var(--acid-dim);
+}
+
+.resp-toggle {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-3);
+  background: none;
+  border: 0;
+  color: var(--text);
+  font: inherit;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+.resp-label { font-size: var(--t-lead); font-weight: 500; }
+.resp-reduction {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: var(--t-lead);
+  color: var(--operational);
+  font-variant-numeric: tabular-nums;
+}
+.resp-toggle:hover .resp-label { color: var(--acid); }
+
+.resp-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin: var(--s-2) 0 var(--s-1);
+}
+.resp-tag {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 1px var(--s-2);
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--r-xs);
+  color: var(--muted);
+}
+/* The costs are coloured; the benefit is not. An interface that highlights
+   only the upside is an interface that sells. */
+.resp-tag--high { color: var(--critical); border-color: var(--critical-dim); background: var(--critical-dim); }
+.resp-tag--medium { color: var(--gold); border-color: var(--gold-dim); }
+.resp-tag--permanent { color: var(--hazard); border-color: var(--hazard-dim); background: var(--hazard-dim); }
+
+.resp-addresses,
+.resp-considered,
+.resp-empty {
+  margin: 0;
+  font-size: var(--t-body);
+  color: var(--muted);
+}
+.resp-considered { margin-top: var(--s-3); font-size: var(--t-micro); }
+.resp-empty { max-width: 56ch; }
+
+.resp-sim {
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--r-sm);
+  padding: var(--s-4);
+  background: var(--elevated);
+}
+.resp-sim-title {
+  margin: 0 0 var(--s-3);
+  font-size: var(--t-lead);
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+.resp-sim-tag {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--violet);
+  border: 1px solid var(--violet-dim);
+  background: var(--violet-dim);
+  border-radius: var(--r-xs);
+  padding: 1px var(--s-2);
+}
+.resp-sim-headline {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin: 0 0 var(--s-4);
+  font-family: var(--font-mono);
+  font-size: var(--t-display);
+  font-variant-numeric: tabular-nums;
+}
+.resp-sim-from { color: var(--muted); text-decoration: line-through; }
+.resp-sim-to { color: var(--text); }
+
+.resp-steps { list-style: none; margin: 0 0 var(--s-4); padding: 0; }
+.resp-step {
+  display: flex;
+  gap: var(--s-3);
+  padding: var(--s-2) 0;
+  border-bottom: 1px solid var(--hairline);
+  font-size: var(--t-body);
+}
+.resp-step-math {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.resp-warn {
+  margin: 0 0 var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border-left: 2px solid var(--muted);
+  font-size: var(--t-body);
+}
+.resp-warn--permanent { border-left-color: var(--hazard); color: var(--hazard); }
+.resp-warn--disruptive { border-left-color: var(--critical); color: var(--critical); }
+.resp-warn--critical { border-left-color: var(--critical); color: var(--critical); }
+
+.resp-sim-note,
+.resp-sim-empty {
+  margin: var(--s-3) 0 0;
+  font-size: var(--t-micro);
+  color: var(--muted);
+}
+.resp-sim-empty { font-size: var(--t-body); }
+
+.resp-clear {
+  margin-top: var(--s-3);
+  background: none;
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font: inherit;
+  padding: var(--s-2) var(--s-3);
+  cursor: pointer;
+}
+.resp-clear:hover { border-color: var(--acid); color: var(--acid); }
