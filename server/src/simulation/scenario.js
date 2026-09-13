@@ -18,16 +18,24 @@
  * rewriting any of it.
  */
 
-export const SERVICES = Object.freeze([
-  { id: 'edge', name: 'Edge Gateway' },
-  { id: 'auth', name: 'Auth Service' },
-  { id: 'core-api', name: 'Core API' },
-  { id: 'accounts', name: 'Accounts Service' },
-  { id: 'payments', name: 'Payments Service' },
-  { id: 'primary-db', name: 'Primary Database' },
-  { id: 'cache', name: 'Session Cache' },
-  { id: 'queue', name: 'Job Queue' },
-  { id: 'partner-api', name: 'Partner API' },
+/**
+ * The services the scenario touches.
+ *
+ * These ids are the topology's node ids, not a second naming scheme. They
+ * have to match exactly: a `service:statusChanged` for a service the graph
+ * has never heard of changes nothing on screen and raises no error, which
+ * is the worst kind of bug — the demo simply looks broken for no stated
+ * reason.
+ */
+export const SERVICE_IDS = Object.freeze([
+  'edge-gateway',
+  'api-gateway',
+  'auth',
+  'core-api',
+  'payment',
+  'storage',
+  'notification',
+  'database',
 ]);
 
 /**
@@ -40,11 +48,11 @@ export const SERVICES = Object.freeze([
  */
 export const AMBIENT_EVENTS = Object.freeze([
   { type: 'API_LATENCY', service: 'core-api', weight: 6 },
-  { type: 'API_LATENCY', service: 'payments', weight: 4 },
-  { type: 'REQUEST_SPIKE', service: 'edge', weight: 3 },
+  { type: 'API_LATENCY', service: 'payment', weight: 4 },
+  { type: 'REQUEST_SPIKE', service: 'edge-gateway', weight: 3 },
   { type: 'FAILED_LOGIN', service: 'auth', weight: 5 },
-  { type: 'DATABASE_ERROR', service: 'primary-db', weight: 2 },
-  { type: 'UNKNOWN_IP', service: 'edge', weight: 3 },
+  { type: 'DATABASE_ERROR', service: 'database', weight: 2 },
+  { type: 'UNKNOWN_IP', service: 'edge-gateway', weight: 3 },
 ]);
 
 /**
@@ -62,14 +70,14 @@ export const CREDENTIAL_ATTACK = Object.freeze({
   userId: 'svc-billing-admin',
   sessionId: 'sess-8841',
   steps: Object.freeze([
-    { at: 5, type: 'UNKNOWN_IP', service: 'edge', note: 'First contact from an unrecognised address' },
+    { at: 5, type: 'UNKNOWN_IP', service: 'edge-gateway', note: 'First contact from an unrecognised address' },
     { at: 12, type: 'FAILED_LOGIN', service: 'auth', repeat: 9, spacingSec: 1.5 },
-    { at: 30, type: 'REQUEST_SPIKE', service: 'edge' },
+    { at: 30, type: 'REQUEST_SPIKE', service: 'edge-gateway' },
     { at: 38, type: 'FAILED_LOGIN', service: 'auth', repeat: 18, spacingSec: 1 },
     { at: 62, type: 'PRIVILEGE_ESCALATION', service: 'auth', note: 'Session assumed an administrative role' },
-    { at: 74, type: 'SENSITIVE_API_ACCESS', service: 'accounts' },
-    { at: 86, type: 'SENSITIVE_API_ACCESS', service: 'payments' },
-    { at: 98, type: 'DATABASE_ERROR', service: 'primary-db', note: 'Unusual query volume against customer records' },
+    { at: 74, type: 'SENSITIVE_API_ACCESS', service: 'storage' },
+    { at: 86, type: 'SENSITIVE_API_ACCESS', service: 'payment' },
+    { at: 98, type: 'DATABASE_ERROR', service: 'database', note: 'Unusual query volume against customer records' },
   ]),
 });
 
@@ -77,7 +85,7 @@ export const CREDENTIAL_ATTACK = Object.freeze({
 export const SERVICE_TRANSITIONS = Object.freeze([
   { at: 40, service: 'auth', status: 'degraded', reason: 'Authentication failure rate above threshold' },
   { at: 66, service: 'auth', status: 'compromised', reason: 'Privilege escalation observed on an active session' },
-  { at: 92, service: 'primary-db', status: 'degraded', reason: 'Query latency rising under unusual read volume' },
+  { at: 92, service: 'database', status: 'degraded', reason: 'Query latency rising under unusual read volume' },
 ]);
 
 export const SCENARIOS = Object.freeze({
