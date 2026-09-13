@@ -1,0 +1,326 @@
+/* ===========================================================================
+   Command Center.
+
+   Layout is a grid that collapses to one column, in reading order. The
+   order in the markup is the order of importance, so a narrow viewport
+   degrades into the right priority rather than a scramble.
+   =========================================================================== */
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-5);
+  background: var(--carbon);
+  border-bottom: 1px solid var(--hairline);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.bar-mark {
+  width: 10px;
+  height: 10px;
+  background: var(--acid);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
+.bar-name {
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+}
+.bar-tagline {
+  font-size: var(--t-micro);
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* --- connection badge: the most important 200 pixels on the page -------- */
+.conn {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-1) var(--s-3);
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--r-sm);
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: 0.14em;
+}
+.conn-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.conn-dot--live {
+  animation: conn-pulse 2s var(--m-ease) infinite;
+}
+@keyframes conn-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+.conn-detail {
+  color: var(--muted);
+  letter-spacing: 0;
+  text-transform: none;
+  font-family: var(--font-ui);
+}
+.conn--ok { color: var(--operational); border-color: var(--operational-dim); }
+.conn--warn { color: var(--gold); border-color: var(--gold-dim); }
+.conn--bad { color: var(--critical); border-color: var(--critical-dim); }
+.conn--idle { color: var(--muted); }
+
+/* A degraded feed is not a badge change alone. The panels dim, so it is
+   impossible to read a stale number without noticing that it is stale —
+   and the dimming is on the panel bodies, never on the badge explaining
+   why, which stays at full contrast. */
+.cc[data-degraded='true'] .panel-body {
+  opacity: 0.55;
+  transition: opacity var(--m-base) var(--m-ease);
+}
+
+.cc {
+  padding: var(--s-6) var(--s-5) var(--s-10);
+  max-width: 1440px;
+  margin: 0 auto;
+}
+.cc-disclosure {
+  margin: 0 0 var(--s-6);
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--violet-dim);
+  border-left: 2px solid var(--violet);
+  border-radius: var(--r-sm);
+  background: var(--violet-dim);
+  color: var(--text);
+  font-size: var(--t-body);
+  max-width: 86ch;
+}
+
+.cc-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) minmax(320px, 1.4fr);
+  gap: var(--s-4);
+  align-items: start;
+}
+.cc-grid > .cc-feed {
+  grid-column: 1 / -1;
+}
+@media (max-width: 900px) {
+  .cc-grid { grid-template-columns: 1fr; }
+}
+
+/* --- panel --------------------------------------------------------------- */
+.panel {
+  background: var(--carbon);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+}
+.panel-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  border-bottom: 1px solid var(--hairline);
+}
+.panel-title {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.panel-hint {
+  font-size: var(--t-micro);
+  color: var(--muted);
+  margin-left: auto;
+  font-family: var(--font-mono);
+}
+.panel-body { padding: var(--s-4); }
+
+/* --- severity badge ------------------------------------------------------ */
+.sev {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: 0.12em;
+  padding: 2px var(--s-2);
+  border-radius: var(--r-xs);
+  border: 1px solid currentColor;
+}
+.sev-score { color: var(--muted); }
+.sev--low { color: var(--sev-low); background: var(--sev-low-dim); }
+.sev--medium { color: var(--sev-medium); background: var(--sev-medium-dim); }
+.sev--high { color: var(--sev-high); background: var(--sev-high-dim); }
+.sev--critical { color: var(--sev-critical); background: var(--sev-critical-dim); }
+
+/* --- risk gauge ---------------------------------------------------------- */
+.gauge-dial { position: relative; width: 180px; margin: 0 auto var(--s-4); }
+.gauge-dial svg { width: 100%; height: auto; display: block; }
+.gauge-track,
+.gauge-fill {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+}
+.gauge-track { stroke: var(--hairline-strong); }
+.gauge-fill { transition: stroke-dasharray var(--m-slow) var(--m-ease); }
+.gauge-fill--low { stroke: var(--sev-low); }
+.gauge-fill--medium { stroke: var(--sev-medium); }
+.gauge-fill--high { stroke: var(--sev-high); }
+.gauge-fill--critical { stroke: var(--sev-critical); }
+
+.gauge-readout {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-1);
+}
+.gauge-score {
+  font-family: var(--font-mono);
+  font-size: 42px;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.gauge-delta {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+}
+.gauge-delta--up { color: var(--critical); }
+.gauge-delta--down { color: var(--operational); }
+
+.gauge-contrib { list-style: none; margin: 0; padding: 0; }
+.gauge-contrib-row {
+  display: grid;
+  grid-template-columns: 1fr 70px 34px;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-1) 0;
+  font-size: var(--t-body);
+}
+.gauge-contrib-bar {
+  height: 4px;
+  background: var(--hairline);
+  border-radius: var(--r-xs);
+  overflow: hidden;
+}
+.gauge-contrib-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--acid);
+  transition: width var(--m-base) var(--m-ease);
+}
+.gauge-contrib-points {
+  font-family: var(--font-mono);
+  text-align: right;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.gauge-empty { color: var(--muted); margin: 0; max-width: 44ch; }
+
+/* --- incident ------------------------------------------------------------ */
+.incident-head {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  margin-bottom: var(--s-2);
+}
+.incident-title { margin: 0; font-size: var(--t-title); font-weight: 600; }
+.incident-line { margin: 0 0 var(--s-4); color: var(--muted); }
+.incident-line b { color: var(--text); font-weight: 500; }
+.incident-sub {
+  margin: 0 0 var(--s-2);
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.incident-reasons {
+  list-style: none;
+  margin: 0 0 var(--s-3);
+  padding: 0;
+  border-top: 1px solid var(--hairline);
+}
+.incident-reason {
+  display: flex;
+  gap: var(--s-3);
+  padding: var(--s-2) 0;
+  border-bottom: 1px solid var(--hairline);
+}
+.incident-reason-weight {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  color: var(--violet);
+  font-variant-numeric: tabular-nums;
+}
+.incident-caveat { margin: 0; font-size: var(--t-micro); color: var(--muted); }
+.incident-none-title { margin: 0 0 var(--s-2); font-weight: 600; }
+.incident-none-body { margin: 0; color: var(--muted); max-width: 52ch; }
+
+/* --- service strip ------------------------------------------------------- */
+.strip { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-1); }
+.strip-item {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-2);
+  border-radius: var(--r-xs);
+  border-left: 2px solid var(--hairline-strong);
+  font-size: var(--t-body);
+}
+.strip-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.strip-status {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.strip-reason { flex-basis: 100%; color: var(--muted); font-size: var(--t-micro); }
+.strip-item--operational { color: var(--operational); border-left-color: var(--operational); }
+.strip-item--degraded { color: var(--hazard); border-left-color: var(--hazard); background: var(--hazard-dim); }
+.strip-item--compromised { color: var(--critical); border-left-color: var(--critical); background: var(--critical-dim); }
+.strip-item--offline { color: var(--muted); border-left-color: var(--muted); }
+.strip-name { color: var(--text); }
+
+/* --- feed ---------------------------------------------------------------- */
+.feed { max-height: 420px; overflow: auto; }
+.feed-table { width: 100%; border-collapse: collapse; font-size: var(--t-body); }
+.feed-table th {
+  position: sticky;
+  top: 0;
+  background: var(--carbon);
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: var(--s-2);
+  border-bottom: 1px solid var(--hairline-strong);
+}
+.feed-table td { padding: var(--s-2); border-bottom: 1px solid var(--hairline); }
+.feed-time,
+.feed-source { font-family: var(--font-mono); color: var(--muted); }
+.feed-type { text-transform: capitalize; }
+.feed-repeat {
+  margin-left: var(--s-2);
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  color: var(--muted);
+}
+/* Noise is present and legible, but visibly secondary — finding the signal
+   inside it is the skill this screen is meant to support. */
+.feed-row--ambient { opacity: 0.55; }
+.feed-empty { color: var(--muted); padding: var(--s-4) 0 0; margin: 0; }
