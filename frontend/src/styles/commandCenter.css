@@ -105,6 +105,7 @@
   gap: var(--s-4);
   align-items: start;
 }
+.cc-grid > .cc-resp,
 .cc-grid > .cc-topo,
 .cc-grid > .cc-radar,
 .cc-grid > .cc-feed {
