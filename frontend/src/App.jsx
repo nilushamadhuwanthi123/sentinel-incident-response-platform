@@ -1,6 +1,7 @@
 import { CommandCenter } from './pages/CommandCenter.jsx';
 import './styles/commandCenter.css';
 import './styles/radar.css';
+import './styles/topology.css';
 
 /**
  * Application shell.
