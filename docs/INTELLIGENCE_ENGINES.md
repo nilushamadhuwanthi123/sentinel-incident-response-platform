@@ -140,7 +140,104 @@ of observations, so an analyst can see when risk moved and what moved it:
 
 ---
 
-## Correlation, recommendation, simulation, posture, challenge
+## Correlation engine — `correlationEngine.js`
+
+Twenty-seven failed logins are noise. An unfamiliar IP is noise. A
+privileged account reading a sensitive endpoint is, most days, someone doing
+their job. Together they are one credential attack, and nothing in a
+scrolling feed makes that connection.
+
+### How it works
+
+1. **Group.** Events are clustered by the entities they share — source
+   address, identity, session — within a time window (default 10 minutes).
+   Grouping is **transitive**: if A and B share an IP and B and C share a
+   session, all three belong to one cluster. That is what lets a single
+   incident be assembled from events with no one field in common.
+2. **Evaluate.** Every rule runs against the cluster and returns whether it
+   matched *and the evidence it matched on*.
+3. **Classify.** The most specific pattern whose required rules all matched
+   wins, so "possible credential attack" is preferred over the vaguer
+   "correlated activity" — but only when it is earned.
+
+### Rules
+
+| Rule | Weight | Matches when |
+|---|---|---|
+| `SHARED_SOURCE_IP` | 18 | every event shares one source address |
+| `SHARED_IDENTITY` | 20 | every event involves one identity |
+| `SHARED_SESSION` | 14 | every event belongs to one session |
+| `AUTH_FAILURE_BURST` | 22 | ≥5 authentication failures |
+| `EXTERNAL_ORIGIN` | 16 | the source is unrecognised |
+| `PRIVILEGED_IDENTITY` | 20 | a privileged identity is involved |
+| `SENSITIVE_RESOURCE` | 22 | a sensitive resource was reached |
+| `ESCALATION_SEQUENCE` | 24 | failure → escalation → access, **in that order** |
+| `MULTI_SERVICE_SPREAD` | 14 | activity touches ≥3 services |
+| `RAPID_SEQUENCE` | 12 | ≥6 events inside 60 seconds |
+
+`ESCALATION_SEQUENCE` checks order, not just presence. The same three event
+types in a different sequence are not that pattern, and saying they are
+would be wrong — there is a test for exactly this.
+
+### Patterns
+
+| Pattern | Requires |
+|---|---|
+| Possible credential attack | burst + external origin + privileged identity |
+| Possible privilege abuse | privileged identity + sensitive resource |
+| Possible escalation chain | escalation sequence |
+| Possible brute-force attempt | burst |
+| Activity across multiple services | multi-service + shared identity |
+
+### Confidence
+
+Matched weight as a share of everything that *could* have matched. It falls
+as the rule set grows, which is correct: more ways to be wrong means less
+certainty from the same evidence. Candidates below the floor (default 40)
+are dropped.
+
+### Reasoning is data, not prose
+
+```js
+reasoning: [
+  { rule: 'ESCALATION_SEQUENCE', label: '…', detail: '…', weight: 24, eventIds: [...] },
+  { rule: 'AUTH_FAILURE_BURST',  label: '…', detail: '27 failed authentications', weight: 22, eventIds: [...] },
+]
+```
+
+The correlation visualisation renders this. A reader must be able to see
+*why* events were judged related, not be asked to trust it.
+
+### It feeds the risk engine
+
+A candidate emits `riskSignals` in exactly the shape `computeRisk` consumes,
+including the observed failure count:
+
+```js
+riskSignals: [
+  { id: 'REPEATED_AUTH_FAILURE', count: 27 },
+  'UNKNOWN_EXTERNAL_IP',
+  'PRIVILEGED_ACCOUNT',
+  'SENSITIVE_RESOURCE_ACCESS',
+]
+```
+
+Correlation decides *what was observed*; risk decides *what it is worth*.
+Neither re-derives the other's job.
+
+### Guarantees, each covered by a test
+
+- Unrelated events do not correlate.
+- Events outside the window are separate candidates, even sharing an entity.
+- A rule that throws is reported as unmatched rather than losing the whole
+  correlation.
+- Timestamps accept ISO strings, epoch milliseconds and `Date`; unusable
+  ones are discarded and counted in `stats.discarded`.
+- The engine does not mutate its input and is deterministic.
+
+---
+
+## Recommendation, simulation, posture, challenge
 
 Documented here as each lands, with the same standard: the rules written
 down, the reasoning returned as structured data, and the guarantees tested.
