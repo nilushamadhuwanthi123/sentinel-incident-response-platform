@@ -21,6 +21,7 @@ import {
 } from '../engines/connectionState.js';
 import { initialLiveState, liveReducer } from '../engines/liveStore.js';
 import { createSocketClient } from '../services/socketService.js';
+import { createLocalClient, hasBackend } from '../services/localSimulation.js';
 
 /** How often the staleness check runs. */
 const HEARTBEAT_MS = 5000;
@@ -42,7 +43,14 @@ export function useSocket(options = {}) {
   const clientRef = useRef(null);
 
   const enabled = options.enabled !== false;
-  const create = options.createClient ?? createSocketClient;
+
+  // With no backend configured the page runs the server's own simulator in
+  // the browser rather than showing OFFLINE forever. Both clients satisfy
+  // the same three-method interface, so nothing below this line — reducer,
+  // engines, components — can tell which one it got, or needs to.
+  const standalone = options.createClient ? false : !hasBackend();
+  const create =
+    options.createClient ?? (standalone ? createLocalClient : createSocketClient);
 
   useEffect(() => {
     if (!enabled) return undefined;
@@ -110,6 +118,7 @@ export function useSocket(options = {}) {
     connection,
     status,
     ready,
+    standalone,
     fresh: isFresh(connection),
     degraded: isDegraded(connection),
     reset,
