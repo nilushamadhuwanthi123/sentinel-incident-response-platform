@@ -31,7 +31,7 @@ import { InfrastructureMap } from '../components/command/InfrastructureMap.jsx';
 import { useSocket } from '../hooks/useSocket.js';
 
 export function CommandCenter({ socketOptions }) {
-  const { live, status, degraded } = useSocket(socketOptions ?? {});
+  const { live, status, degraded, standalone } = useSocket(socketOptions ?? {});
   const incident = live.incidents[0] ?? null;
   const score = live.risk?.score ?? 0;
 
@@ -64,8 +64,16 @@ export function CommandCenter({ socketOptions }) {
             imply otherwise. */}
         <p className="cc-disclosure">
           <strong>Simulation.</strong> Every event, service and score on this
-          page comes from a scripted scenario running on the server. Nothing
-          here is real telemetry, and no vulnerability scanning is performed.
+          page comes from a scripted scenario. Nothing here is real telemetry,
+          and no vulnerability scanning is performed.
+          {standalone && (
+            <>
+              {' '}
+              This build has no backend configured, so it is running the
+              server&rsquo;s own simulator in your browser — the same module,
+              not a second copy of it.
+            </>
+          )}
         </p>
 
         <div className="cc-grid">
