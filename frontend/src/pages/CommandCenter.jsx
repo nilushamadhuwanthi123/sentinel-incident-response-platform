@@ -7,9 +7,10 @@
  *   2. How bad is it right now, and why?         (risk gauge with contributors)
  *   3. What is the one thing happening?          (correlated incident)
  *   4. What is the estate doing?                 (service strip)
- *   5. What would it cost if this spread?       (topology + blast radius)
- *   6. Where is it coming from?                  (threat radar)
- *   7. What is actually arriving?                (the feed)
+ *   5. What should I do, and what does it cost? (response console)
+ *   6. What would it cost if this spread?       (topology + blast radius)
+ *   7. Where is it coming from?                  (threat radar)
+ *   8. What is actually arriving?                (the feed)
  *
  * The order is the point. Most security dashboards open with the feed,
  * which is the least decision-useful thing on the page: it tells an
@@ -28,6 +29,7 @@ import { IncidentSummary } from '../components/command/IncidentSummary.jsx';
 import { ServiceStrip } from '../components/command/ServiceStrip.jsx';
 import { ThreatRadar } from '../components/command/ThreatRadar.jsx';
 import { InfrastructureMap } from '../components/command/InfrastructureMap.jsx';
+import { ResponseConsole } from '../components/command/ResponseConsole.jsx';
 import { useSocket } from '../hooks/useSocket.js';
 
 export function CommandCenter({ socketOptions }) {
@@ -94,6 +96,14 @@ export function CommandCenter({ socketOptions }) {
             hint={`${Object.keys(live.services).length} reported changes`}
           >
             <ServiceStrip services={live.services} />
+          </Panel>
+
+          <Panel
+            title="Response"
+            hint="recommended containment · nothing is executed"
+            className="cc-resp"
+          >
+            <ResponseConsole incident={incident} />
           </Panel>
 
           <Panel
