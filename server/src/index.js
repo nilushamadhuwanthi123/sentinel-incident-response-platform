@@ -3,15 +3,19 @@ import express from 'express';
 import cors from 'cors';
 import { Server } from 'socket.io';
 import { config, hasDatabase } from './config.js';
+import helmet from 'helmet';
 import { healthRouter } from './routes/health.js';
+import { authRouter } from './routes/auth.js';
 import { registerSocketHandlers } from './sockets/index.js';
 
 const app = express();
 
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(cors({ origin: config.corsOrigins, credentials: true }));
 app.use(express.json({ limit: '256kb' }));
 
 app.use('/api/health', healthRouter);
+app.use('/api/auth', authRouter);
 
 // Unknown API routes answer in the same shape as everything else, so the
 // client never has to branch on "was this JSON or an HTML error page".
