@@ -22,7 +22,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Panel } from '../components/shared/Panel.jsx';
-import { ConnectionBadge } from '../components/shared/ConnectionBadge.jsx';
 import { RiskGauge } from '../components/command/RiskGauge.jsx';
 import { EventFeed } from '../components/command/EventFeed.jsx';
 import { IncidentSummary } from '../components/command/IncidentSummary.jsx';
@@ -30,10 +29,11 @@ import { ServiceStrip } from '../components/command/ServiceStrip.jsx';
 import { ThreatRadar } from '../components/command/ThreatRadar.jsx';
 import { InfrastructureMap } from '../components/command/InfrastructureMap.jsx';
 import { ResponseConsole } from '../components/command/ResponseConsole.jsx';
-import { useSocket } from '../hooks/useSocket.js';
+import { AssistPanel } from '../components/command/AssistPanel.jsx';
+import { useLive } from '../context/LiveContext.jsx';
 
-export function CommandCenter({ socketOptions }) {
-  const { live, status, degraded, standalone } = useSocket(socketOptions ?? {});
+export function CommandCenter() {
+  const { live, standalone, degraded } = useLive();
   const incident = live.incidents[0] ?? null;
   const score = live.risk?.score ?? 0;
 
@@ -48,17 +48,7 @@ export function CommandCenter({ socketOptions }) {
   }, [score]);
 
   return (
-    <>
-      <a className="skip-link" href="#main">Skip to main content</a>
-
-      <header className="bar">
-        <span className="bar-mark" aria-hidden="true" />
-        <span className="bar-name">SENTINEL</span>
-        <span className="bar-tagline">Command Center</span>
-        <ConnectionBadge status={status} degraded={degraded} />
-      </header>
-
-      <main id="main" className="cc" data-degraded={degraded ? 'true' : 'false'}>
+    <main id="main" className="cc" data-degraded={degraded ? 'true' : 'false'}>
         <h1 className="visually-hidden">SENTINEL Command Center</h1>
 
         {/* Said once, plainly, at the top of the page rather than buried in a
@@ -99,6 +89,14 @@ export function CommandCenter({ socketOptions }) {
           </Panel>
 
           <Panel
+            title="Assist"
+            hint="deterministic rules · no language model"
+            className="cc-assist"
+          >
+            <AssistPanel incident={incident} risk={live.risk} />
+          </Panel>
+
+          <Panel
             title="Response"
             hint="recommended containment · nothing is executed"
             className="cc-resp"
@@ -130,8 +128,7 @@ export function CommandCenter({ socketOptions }) {
             <EventFeed events={live.events} counts={live.counts} />
           </Panel>
         </div>
-      </main>
-    </>
+    </main>
   );
 }
 
