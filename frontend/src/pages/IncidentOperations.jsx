@@ -53,8 +53,11 @@ export function IncidentOperations() {
     }
   };
 
+  const [createError, setCreateError] = useState('');
+
   const handleCreate = async (e) => {
     e.preventDefault();
+    setCreateError('');
     const res = await api.incidents.create({
       title: newTitle,
       severity: newSeverity,
@@ -66,6 +69,8 @@ export function IncidentOperations() {
       setNewModalOpen(false);
       setNewTitle('');
       setNewSummary('');
+    } else {
+      setCreateError(res.error || 'Failed to create incident record');
     }
   };
 
@@ -454,6 +459,11 @@ export function IncidentOperations() {
                     required
                   />
                 </div>
+                {createError && (
+                  <div style={{ color: 'var(--critical)', fontSize: 'var(--t-label)', fontFamily: 'var(--font-mono)' }}>
+                    ⚠ {createError}
+                  </div>
+                )}
               </div>
               <div className="ops-modal-footer">
                 <button type="button" className="ops-btn" onClick={() => setNewModalOpen(false)}>Cancel</button>

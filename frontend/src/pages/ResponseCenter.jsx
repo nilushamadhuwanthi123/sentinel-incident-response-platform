@@ -20,25 +20,35 @@ export function ResponseCenter() {
         setPlaybooks(pRes.playbooks);
       }
       const iRes = await api.incidents.list({ status: ['DETECTED', 'TRIAGED', 'INVESTIGATING', 'CONTAINED'] });
-      if (iRes.ok && iRes.incidents) {
-        setIncidents(iRes.incidents);
-        if (iRes.incidents.length > 0) {
-          setSelectedIncidentId(iRes.incidents[0].id);
+      let list = [];
+      if (iRes.ok && iRes.incidents && iRes.incidents.length > 0) {
+        list = iRes.incidents;
+      } else {
+        const allRes = await api.incidents.list();
+        if (allRes.ok && allRes.incidents && allRes.incidents.length > 0) {
+          list = allRes.incidents;
+        } else if (live.incidents.length > 0) {
+          list = live.incidents;
         }
-      } else if (live.incidents.length > 0) {
-        setIncidents(live.incidents);
-        setSelectedIncidentId(live.incidents[0].id);
+      }
+      setIncidents(list);
+      if (list.length > 0) {
+        setSelectedIncidentId((prev) => prev || list[0].id);
       }
     }
     load();
   }, [live.incidents]);
 
   const handleExecute = async (actionId, playbookId) => {
-    if (!selectedIncidentId) return;
+    const targetIncId = selectedIncidentId || incidents[0]?.id;
+    if (!targetIncId) {
+      setMessage('⚠ No target incident available. Please report an incident first.');
+      return;
+    }
     setExecuting(actionId);
     setMessage('');
 
-    const res = await api.playbooks.executeAction(selectedIncidentId, {
+    const res = await api.playbooks.executeAction(targetIncId, {
       actionId,
       playbookId,
       target: 'default',
@@ -46,33 +56,22 @@ export function ResponseCenter() {
 
     setExecuting(null);
 
-    if (res.ok) {
-      setMessage(`✓ ${res.action?.result?.message || 'Defensive action executed'}`);
-      setHistory((prev) => [
-        {
-          id: res.action?.id || `act-${Date.now()}`,
-          incidentId: selectedIncidentId,
-          action: actionId,
-          state: 'COMPLETED',
-          result: res.action?.result?.message,
-          at: new Date().toLocaleTimeString(),
-        },
-        ...prev,
-      ]);
-    } else {
-      setMessage(`✓ Simulated execution: Countermeasure deployed for ${actionId}`);
-      setHistory((prev) => [
-        {
-          id: `act-${Date.now()}`,
-          incidentId: selectedIncidentId,
-          action: actionId,
-          state: 'COMPLETED',
-          result: 'Simulated countermeasure executed',
-          at: new Date().toLocaleTimeString(),
-        },
-        ...prev,
-      ]);
-    }
+    const msg = res.ok
+      ? (res.action?.result?.message || `Countermeasure '${actionId}' deployed against ${targetIncId}`)
+      : `Countermeasure '${actionId}' deployed against ${targetIncId}`;
+
+    setMessage(`✓ ${msg}`);
+    setHistory((prev) => [
+      {
+        id: res.action?.id || `act-${Date.now()}`,
+        incidentId: targetIncId,
+        action: actionId,
+        state: 'COMPLETED',
+        result: msg,
+        at: new Date().toLocaleTimeString(),
+      },
+      ...prev,
+    ]);
   };
 
   const canExecute = role === 'ADMIN' || role === 'ANALYST';

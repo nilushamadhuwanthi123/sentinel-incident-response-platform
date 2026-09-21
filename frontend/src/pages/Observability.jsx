@@ -9,6 +9,7 @@ export function Observability() {
   const [history, setHistory] = useState([]);
   const [selectedService, setSelectedService] = useState('auth');
   const [loading, setLoading] = useState(true);
+  const [notice, setNotice] = useState('');
 
   useEffect(() => {
     async function fetchTelemetry() {
@@ -31,6 +32,14 @@ export function Observability() {
   }, [selectedService]);
 
   const handleStatusOverride = async (serviceId, newStatus) => {
+    // 1. Optimistic update so UI reacts immediately
+    setServices((prev) =>
+      prev.map((s) => (s.id === serviceId ? { ...s, status: newStatus } : s))
+    );
+    setNotice(`✓ Service '${serviceId}' state updated to '${newStatus.toUpperCase()}'`);
+    setTimeout(() => setNotice(''), 3500);
+
+    // 2. Persist to server and MongoDB
     const res = await api.services.overrideStatus(serviceId, newStatus, 'Manual operator action');
     if (res.ok && res.service) {
       setServices((prev) => prev.map((s) => (s.id === serviceId ? res.service : s)));
@@ -69,6 +78,32 @@ export function Observability() {
           </button>
         </div>
       </div>
+
+      {notice && (
+        <div
+          style={{
+            background: 'rgba(118, 224, 111, 0.12)',
+            border: '1px solid var(--operational)',
+            color: 'var(--operational)',
+            padding: 'var(--s-3)',
+            borderRadius: 'var(--r-sm)',
+            fontFamily: 'var(--font-mono)',
+            fontSize: 'var(--t-body)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          <span>{notice}</span>
+          <button
+            type="button"
+            style={{ background: 'none', border: 'none', color: 'var(--muted)', cursor: 'pointer' }}
+            onClick={() => setNotice('')}
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {loading && services.length === 0 && (
         <div style={{ color: 'var(--muted)', textAlign: 'center', padding: 'var(--s-6)', fontFamily: 'var(--font-mono)' }}>

@@ -402,12 +402,18 @@ export const store = {
   listIncidents(filters = {}) {
     let list = [...incidents];
     if (filters.status) {
-      const statuses = Array.isArray(filters.status) ? filters.status : [filters.status];
-      list = list.filter((i) => statuses.includes(i.status));
+      const raw = Array.isArray(filters.status)
+        ? filters.status
+        : String(filters.status).split(',');
+      const statuses = raw.map((s) => s.trim().toUpperCase());
+      list = list.filter((i) => statuses.includes(i.status?.toUpperCase()));
     }
     if (filters.severity) {
-      const sevs = Array.isArray(filters.severity) ? filters.severity : [filters.severity];
-      list = list.filter((i) => sevs.includes(i.severity));
+      const raw = Array.isArray(filters.severity)
+        ? filters.severity
+        : String(filters.severity).split(',');
+      const sevs = raw.map((s) => s.trim().toUpperCase());
+      list = list.filter((i) => sevs.includes(i.severity?.toUpperCase()));
     }
     if (filters.service) {
       list = list.filter((i) => i.affectedServices?.includes(filters.service));

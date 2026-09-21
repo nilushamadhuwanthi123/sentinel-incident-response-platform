@@ -27,8 +27,9 @@ export function AuditTrail() {
   }, []);
 
   const handleGenerateReport = async () => {
-    if (!selectedIncidentId) return;
-    const res = await api.incidents.getReport(selectedIncidentId);
+    const targetId = selectedIncidentId || incidents[0]?.id;
+    if (!targetId) return;
+    const res = await api.incidents.getReport(targetId);
     if (res.ok && res.report) {
       setReport(res.report);
       setReportModalOpen(true);

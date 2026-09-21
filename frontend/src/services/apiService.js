@@ -63,12 +63,31 @@ export const api = {
     async users() {
       return request('/api/auth/users');
     },
+    async switchRole(role) {
+      const res = await request('/api/auth/switch', {
+        method: 'POST',
+        body: JSON.stringify({ role }),
+      });
+      if (res.ok && res.token) {
+        localStorage.setItem('sentinel_token', res.token);
+      }
+      return res;
+    },
   },
 
   // --- Incidents ---
   incidents: {
     async list(filters = {}) {
-      const query = new URLSearchParams(filters).toString();
+      const params = new URLSearchParams();
+      for (const [key, val] of Object.entries(filters)) {
+        if (val === undefined || val === null || val === '') continue;
+        if (Array.isArray(val)) {
+          params.set(key, val.join(','));
+        } else {
+          params.set(key, String(val));
+        }
+      }
+      const query = params.toString();
       return request(`/api/incidents${query ? `?${query}` : ''}`);
     },
     async get(id) {

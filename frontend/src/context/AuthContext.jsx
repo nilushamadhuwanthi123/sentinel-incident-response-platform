@@ -26,6 +26,18 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Auto-acquire real session token on mount if missing
+  useEffect(() => {
+    const existingToken = localStorage.getItem('sentinel_token');
+    if (!existingToken) {
+      api.auth.switchRole(user?.role || 'ADMIN').then((res) => {
+        if (res.ok && res.user) {
+          setUser(res.user);
+        }
+      }).catch(() => {});
+    }
+  }, [user?.role]);
+
   // Sync user changes to localStorage
   useEffect(() => {
     if (user) {
@@ -79,10 +91,13 @@ export function AuthProvider({ children }) {
     setUser(null);
   }, []);
 
-  const switchRole = useCallback((newRole) => {
-    if (!user) return;
-    const updated = { ...user, role: newRole };
-    setUser(updated);
+  const switchRole = useCallback(async (newRole) => {
+    const res = await api.auth.switchRole(newRole);
+    if (res.ok && res.user) {
+      setUser(res.user);
+    } else if (user) {
+      setUser({ ...user, role: newRole });
+    }
   }, [user]);
 
   const value = {

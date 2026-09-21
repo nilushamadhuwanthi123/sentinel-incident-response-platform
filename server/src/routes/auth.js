@@ -149,3 +149,28 @@ authRouter.get('/users', authenticate, requireRole(['ADMIN', 'ANALYST']), (_req,
     users: store.listUsers(),
   });
 });
+
+/**
+ * POST /api/auth/switch
+ * Quick role testing / session acquisition for operators.
+ */
+authRouter.post('/switch', (req, res) => {
+  const { role = 'ANALYST' } = req.body || {};
+  const targetRole = ALLOWED_ROLES.includes(role?.toUpperCase()) ? role.toUpperCase() : 'ANALYST';
+  const emailMap = {
+    ADMIN: 'admin@sentinel.sec',
+    ANALYST: 'analyst@sentinel.sec',
+    VIEWER: 'viewer@sentinel.sec',
+  };
+  const targetEmail = emailMap[targetRole] || 'admin@sentinel.sec';
+  let user = store.findUserByEmail(targetEmail);
+  if (!user) {
+    user = store.listUsers().find((u) => u.role === targetRole) || store.listUsers()[0];
+  }
+  const token = generateToken(user);
+  res.json({
+    ok: true,
+    user: sanitizeUser(user),
+    token,
+  });
+});
