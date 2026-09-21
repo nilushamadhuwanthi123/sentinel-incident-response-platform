@@ -1,9 +1,14 @@
 import bcrypt from 'bcryptjs';
-
-/**
- * In-memory unified data store with realistic seed data.
- * Supports complete CRUD, lifecycle management, and optional MongoDB delegation.
- */
+import { isMongoConnected } from './mongoose.js';
+import {
+  UserModel,
+  IncidentModel,
+  ServiceModel,
+  PlaybookModel,
+  EventModel,
+  ResponseActionModel,
+  AuditLogModel,
+} from './models.js';
 
 const SALT_ROUNDS = 10;
 const hash = (pwd) => bcrypt.hashSync(pwd, SALT_ROUNDS);
@@ -320,6 +325,35 @@ export const store = {
     metrics = [];
   },
 
+  getInitialSeed() {
+    return {
+      users: initialUsers(),
+      services: initialServices(),
+      playbooks: initialPlaybooks(),
+      incidents: initialIncidents(),
+      auditLogs: initialAuditLogs(),
+    };
+  },
+
+  async hydrateFromMongo() {
+    if (!isMongoConnected()) return;
+    try {
+      const dbUsers = await UserModel.find().lean();
+      if (dbUsers.length > 0) users = dbUsers;
+      const dbIncidents = await IncidentModel.find().lean();
+      if (dbIncidents.length > 0) incidents = dbIncidents;
+      const dbServices = await ServiceModel.find().lean();
+      if (dbServices.length > 0) services = dbServices;
+      const dbPlaybooks = await PlaybookModel.find().lean();
+      if (dbPlaybooks.length > 0) playbooks = dbPlaybooks;
+      const dbAudit = await AuditLogModel.find().lean();
+      if (dbAudit.length > 0) auditLogs = dbAudit;
+      console.warn(`[sentinel] hydrated store from MongoDB: ${incidents.length} incidents, ${users.length} users.`);
+    } catch (err) {
+      console.warn('[sentinel] MongoDB hydration warning:', err.message);
+    }
+  },
+
   // --- Users ---
   findUserByEmail(email) {
     if (!email) return null;
@@ -340,6 +374,9 @@ export const store = {
       ...userData,
     };
     users.push(newUser);
+    if (isMongoConnected()) {
+      UserModel.create(newUser).catch(() => {});
+    }
     return newUser;
   },
 
@@ -347,6 +384,9 @@ export const store = {
     const idx = users.findIndex((u) => u.id === id);
     if (idx === -1) return null;
     users[idx] = { ...users[idx], ...updates, updatedAt: new Date().toISOString() };
+    if (isMongoConnected()) {
+      UserModel.updateOne({ id }, { $set: updates }).catch(() => {});
+    }
     return users[idx];
   },
 
@@ -416,6 +456,9 @@ export const store = {
       ...data,
     };
     incidents.unshift(newInc);
+    if (isMongoConnected()) {
+      IncidentModel.create(newInc).catch(() => {});
+    }
     return newInc;
   },
 
@@ -447,6 +490,9 @@ export const store = {
     }
 
     incidents[idx] = updated;
+    if (isMongoConnected()) {
+      IncidentModel.updateOne({ id }, { $set: updated }).catch(() => {});
+    }
     return updated;
   },
 
@@ -454,6 +500,9 @@ export const store = {
     const idx = incidents.findIndex((i) => i.id === id);
     if (idx === -1) return false;
     incidents.splice(idx, 1);
+    if (isMongoConnected()) {
+      IncidentModel.deleteOne({ id }).catch(() => {});
+    }
     return true;
   },
 
@@ -470,6 +519,9 @@ export const store = {
     const idx = services.findIndex((s) => s.id === id);
     if (idx === -1) return null;
     services[idx] = { ...services[idx], ...updates, lastChecked: new Date().toISOString() };
+    if (isMongoConnected()) {
+      ServiceModel.updateOne({ id }, { $set: updates }).catch(() => {});
+    }
     return services[idx];
   },
 
@@ -511,6 +563,9 @@ export const store = {
       ...actionData,
     };
     responseActions.unshift(action);
+    if (isMongoConnected()) {
+      ResponseActionModel.create(action).catch(() => {});
+    }
     return action;
   },
 
@@ -523,6 +578,9 @@ export const store = {
     const idx = responseActions.findIndex((a) => a.id === id);
     if (idx === -1) return null;
     responseActions[idx] = { ...responseActions[idx], ...updates };
+    if (isMongoConnected()) {
+      ResponseActionModel.updateOne({ id }, { $set: updates }).catch(() => {});
+    }
     return responseActions[idx];
   },
 
@@ -535,6 +593,9 @@ export const store = {
     };
     auditLogs.unshift(log);
     if (auditLogs.length > 1000) auditLogs.pop();
+    if (isMongoConnected()) {
+      AuditLogModel.create(log).catch(() => {});
+    }
     return log;
   },
 
@@ -565,6 +626,9 @@ export const store = {
     };
     events.unshift(event);
     if (events.length > 500) events.pop();
+    if (isMongoConnected()) {
+      EventModel.create(event).catch(() => {});
+    }
     return event;
   },
 

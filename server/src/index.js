@@ -15,6 +15,9 @@ import { metricsRouter } from './routes/metrics.js';
 import { analyticsRouter } from './routes/analytics.js';
 import { auditRouter } from './routes/audit.js';
 import { registerSocketHandlers } from './sockets/index.js';
+import { connectMongo, isMongoConnected } from './data/mongoose.js';
+import { seedMongoIfEmpty } from './data/seeder.js';
+import { store } from './data/store.js';
 
 const app = express();
 
@@ -68,10 +71,18 @@ const io = new Server(server, {
 
 registerSocketHandlers(io);
 
-server.listen(config.port, () => {
+server.listen(config.port, async () => {
+  if (hasDatabase()) {
+    const connected = await connectMongo();
+    if (connected) {
+      await seedMongoIfEmpty(store.getInitialSeed());
+      await store.hydrateFromMongo();
+    }
+  }
+
   console.warn(
     `[sentinel] listening on :${config.port} (${config.env}) — ` +
-      `store: ${hasDatabase() ? 'mongodb' : 'in-memory simulation'}`
+      `store: ${isMongoConnected() ? 'mongodb' : 'in-memory simulation'}`
   );
 });
 

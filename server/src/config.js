@@ -1,4 +1,18 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
+import path from 'node:path';
+import fs from 'node:fs';
+
+// Look for .env in current directory or project root
+const currentEnv = path.resolve(process.cwd(), '.env');
+const parentEnv = path.resolve(process.cwd(), '../.env');
+
+if (fs.existsSync(currentEnv)) {
+  dotenv.config({ path: currentEnv });
+} else if (fs.existsSync(parentEnv)) {
+  dotenv.config({ path: parentEnv });
+} else {
+  dotenv.config();
+}
 
 const parseOrigins = (raw) =>
   (raw ?? '')
@@ -9,9 +23,6 @@ const parseOrigins = (raw) =>
 export const config = {
   port: Number(process.env.PORT) || 4000,
   env: process.env.NODE_ENV ?? 'development',
-  // No wildcard fallback: an origin has to be named, in development as well
-  // as production, so a deployment that forgets CORS_ORIGINS fails loudly
-  // rather than quietly accepting every origin on the internet.
   corsOrigins: parseOrigins(process.env.CORS_ORIGINS) || ['http://localhost:5173'],
   mongoUri: process.env.MONGODB_URI ?? '',
   jwtSecret: process.env.JWT_SECRET || 'sentinel-platform-defensive-jwt-secret-key-2026',
