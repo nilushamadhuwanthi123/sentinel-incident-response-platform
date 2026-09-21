@@ -11,6 +11,7 @@ import { eventsRouter } from './routes/events.js';
 import { playbooksRouter, incidentActionsRouter } from './routes/playbooks.js';
 import { servicesRouter } from './routes/services.js';
 import { metricsRouter } from './routes/metrics.js';
+import { analyticsRouter } from './routes/analytics.js';
 import { registerSocketHandlers } from './sockets/index.js';
 
 const app = express();
@@ -27,6 +28,7 @@ app.use('/api/events', eventsRouter);
 app.use('/api/playbooks', playbooksRouter);
 app.use('/api/services', servicesRouter);
 app.use('/api/metrics', metricsRouter);
+app.use('/api/analytics', analyticsRouter);
 
 // Unknown API routes answer in the same shape as everything else, so the
 // client never has to branch on "was this JSON or an HTML error page".
