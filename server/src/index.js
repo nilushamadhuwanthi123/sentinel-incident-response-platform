@@ -6,6 +6,7 @@ import { config, hasDatabase } from './config.js';
 import helmet from 'helmet';
 import { healthRouter } from './routes/health.js';
 import { authRouter } from './routes/auth.js';
+import { incidentsRouter } from './routes/incidents.js';
 import { registerSocketHandlers } from './sockets/index.js';
 
 const app = express();
@@ -16,6 +17,7 @@ app.use(express.json({ limit: '256kb' }));
 
 app.use('/api/health', healthRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/incidents', incidentsRouter);
 
 // Unknown API routes answer in the same shape as everything else, so the
 // client never has to branch on "was this JSON or an HTML error page".
