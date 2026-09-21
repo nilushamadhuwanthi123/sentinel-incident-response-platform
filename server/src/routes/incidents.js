@@ -9,6 +9,8 @@ import {
 import { authenticate, optionalAuthenticate, requireRole } from '../middleware/auth.js';
 import { broadcast } from '../sockets/index.js';
 
+import { generateIncidentReport } from '../services/reportGenerator.js';
+
 export const incidentsRouter = express.Router();
 
 /**
@@ -52,6 +54,26 @@ incidentsRouter.get('/:id', optionalAuthenticate, (req, res) => {
     incident,
     actions,
   });
+});
+
+/**
+ * GET /api/incidents/:id/report
+ * Generate structured post-incident review report and timeline summary.
+ */
+incidentsRouter.get('/:id/report', optionalAuthenticate, (req, res) => {
+  const { id } = req.params;
+  try {
+    const report = generateIncidentReport(id);
+    res.json({
+      ok: true,
+      report,
+    });
+  } catch (err) {
+    res.status(404).json({
+      ok: false,
+      error: err.message,
+    });
+  }
 });
 
 /**
