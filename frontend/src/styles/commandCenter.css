@@ -105,6 +105,7 @@
   gap: var(--s-4);
   align-items: start;
 }
+.cc-grid > .cc-assist,
 .cc-grid > .cc-resp,
 .cc-grid > .cc-topo,
 .cc-grid > .cc-radar,
@@ -327,3 +328,50 @@
    inside it is the skill this screen is meant to support. */
 .feed-row--ambient { opacity: 0.55; }
 .feed-empty { color: var(--muted); padding: var(--s-4) 0 0; margin: 0; }
+
+/* --- shell navigation ----------------------------------------------------- */
+.bar-nav { display: flex; gap: var(--s-1); margin-left: var(--s-3); }
+.bar-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  padding: var(--s-1) var(--s-3);
+  border-radius: var(--r-sm);
+  color: var(--muted);
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+}
+.bar-link:hover { color: var(--text); }
+.bar-link.active {
+  color: var(--acid);
+  border-color: var(--acid-dim);
+  background: var(--acid-dim);
+}
+/* A quiet mark that there is something to investigate. Not a count, not a
+   colour that competes with the connection badge — just presence. */
+.bar-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--critical);
+}
+
+
+.bar-palette {
+  margin-left: auto;
+  background: none;
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--r-sm);
+  color: var(--muted);
+  padding: 2px var(--s-2);
+  cursor: pointer;
+}
+.bar-palette kbd { font-family: var(--font-mono); font-size: var(--t-micro); }
+.bar-palette:hover { color: var(--acid); border-color: var(--acid-dim); }
+/* The connection badge had margin-left:auto to push right; the palette
+   button now owns that, so the badge sits beside it. */
+.bar-palette + .conn { margin-left: var(--s-2); }
