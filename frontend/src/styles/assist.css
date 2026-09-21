@@ -1,0 +1,58 @@
+/* ===========================================================================
+   SENTINEL Assist.
+
+   The disclosure leads. A box labelled "Assist" in a security console reads
+   as a model unless it says otherwise.
+   =========================================================================== */
+
+.assist-disclosure {
+  margin: 0 0 var(--s-4);
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--r-sm);
+  color: var(--muted);
+  font-size: var(--t-micro);
+  line-height: 1.6;
+  max-width: 72ch;
+}
+
+.assist-notes { list-style: none; margin: 0 0 var(--s-3); padding: 0; }
+.assist-note {
+  display: grid;
+  grid-template-columns: 68px 1fr;
+  gap: var(--s-1) var(--s-3);
+  padding: var(--s-3) 0;
+  border-bottom: 1px solid var(--hairline);
+}
+.assist-tag {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  align-self: start;
+  padding: 1px var(--s-2);
+  border: 1px solid currentColor;
+  border-radius: var(--r-xs);
+  text-align: center;
+}
+.assist-note--act .assist-tag { color: var(--acid); background: var(--acid-dim); }
+.assist-note--caution .assist-tag { color: var(--gold); background: var(--gold-dim); }
+.assist-note--context .assist-tag { color: var(--muted); }
+
+.assist-text { margin: 0; font-size: var(--t-body); max-width: 70ch; }
+.assist-rule {
+  grid-column: 2;
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  color: var(--muted);
+  letter-spacing: 0.08em;
+}
+
+.assist-empty,
+.assist-counts {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--t-body);
+  max-width: 64ch;
+}
+.assist-counts { font-family: var(--font-mono); font-size: var(--t-micro); margin-top: var(--s-3); }
