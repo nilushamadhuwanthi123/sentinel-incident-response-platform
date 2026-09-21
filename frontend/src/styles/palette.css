@@ -1,0 +1,86 @@
+/* ===========================================================================
+   Command palette.
+   =========================================================================== */
+
+.palette-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(7, 8, 7, 0.72);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 12vh;
+  z-index: 100;
+}
+
+.palette {
+  width: min(560px, 92vw);
+  background: var(--carbon);
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+
+.palette-input {
+  width: 100%;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--hairline);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--t-lead);
+  padding: var(--s-4);
+}
+.palette-input::placeholder { color: var(--muted); }
+.palette-input:focus { outline: none; }
+/* The input keeps focus throughout, so the focus ring goes on the dialog. */
+.palette:focus-within { outline: 2px solid var(--acid); outline-offset: -2px; }
+
+.palette-list {
+  list-style: none;
+  margin: 0;
+  padding: var(--s-2);
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.palette-item {
+  display: grid;
+  grid-template-columns: 78px 1fr;
+  gap: var(--s-1) var(--s-3);
+  align-items: baseline;
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+}
+.palette-item.is-active { background: var(--acid-dim); }
+.palette-item.is-disabled { opacity: 0.5; cursor: not-allowed; }
+
+.palette-group {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.palette-label { font-size: var(--t-body); }
+.palette-reason {
+  grid-column: 2;
+  font-size: var(--t-micro);
+  color: var(--gold);
+}
+
+.palette-empty,
+.palette-hint {
+  margin: 0;
+  padding: var(--s-3) var(--s-4);
+  color: var(--muted);
+  font-size: var(--t-micro);
+}
+.palette-hint { border-top: 1px solid var(--hairline); }
+.palette-hint kbd {
+  font-family: var(--font-mono);
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--r-xs);
+  padding: 0 4px;
+}

@@ -1,0 +1,79 @@
+/* ===========================================================================
+   Forensics desk.
+
+   The limitation leads. A panel that looked like chain-of-custody evidence
+   and was not would be worse than no panel.
+   =========================================================================== */
+
+.fx-caveat {
+  margin: 0 0 var(--s-4);
+  padding: var(--s-3);
+  border: 1px solid var(--gold-dim);
+  border-left: 2px solid var(--gold);
+  border-radius: var(--r-sm);
+  background: var(--gold-dim);
+  font-size: var(--t-body);
+  max-width: 78ch;
+}
+
+.fx-meta {
+  margin: 0 0 var(--s-4);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-5);
+}
+.fx-meta > div { display: flex; flex-direction: column; gap: 2px; }
+.fx-meta dt {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.fx-meta dd { margin: 0; font-family: var(--font-mono); }
+.fx-seal { color: var(--acid); }
+
+.fx-table { width: 100%; border-collapse: collapse; font-size: var(--t-body); }
+.fx-table th {
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: var(--s-2);
+  border-bottom: 1px solid var(--hairline-strong);
+}
+.fx-table td { padding: var(--s-2); border-bottom: 1px solid var(--hairline); }
+.fx-mono { font-family: var(--font-mono); color: var(--muted); }
+.fx-id { font-family: var(--font-mono); }
+
+.fx-more,
+.fx-empty {
+  margin: var(--s-2) 0 0;
+  color: var(--muted);
+  font-size: var(--t-body);
+  max-width: 60ch;
+}
+
+.fx-actions { display: flex; gap: var(--s-2); margin-top: var(--s-4); flex-wrap: wrap; }
+.fx-button {
+  background: none;
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font: inherit;
+  padding: var(--s-2) var(--s-3);
+  cursor: pointer;
+}
+.fx-button:hover { border-color: var(--acid); color: var(--acid); }
+
+.fx-result {
+  margin: var(--s-3) 0 0;
+  padding: var(--s-2) var(--s-3);
+  border-left: 2px solid var(--muted);
+  font-size: var(--t-body);
+  max-width: 72ch;
+}
+.fx-result.is-valid { border-left-color: var(--operational); color: var(--operational); }
+.fx-result.is-broken { border-left-color: var(--critical); color: var(--critical); }

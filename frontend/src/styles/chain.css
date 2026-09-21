@@ -1,0 +1,127 @@
+/* ===========================================================================
+   Attack chain timeline.
+
+   Three states, three visual treatments. A gap and a not-yet-reached stage
+   look different on purpose: drawing them the same way would make the chain
+   look more confident than it is.
+   =========================================================================== */
+
+.chain-summary {
+  margin: 0 0 var(--s-4);
+  font-size: var(--t-lead);
+  max-width: 70ch;
+}
+
+.chain-track {
+  list-style: none;
+  margin: 0 0 var(--s-4);
+  padding: 0 0 0 var(--s-5);
+  border-left: 1px solid var(--hairline-strong);
+}
+
+.chain-stage {
+  position: relative;
+  padding: 0 0 var(--s-5) 0;
+}
+.chain-marker {
+  position: absolute;
+  left: calc(var(--s-5) * -1 - 5px);
+  top: 4px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1px solid var(--hairline-strong);
+  background: var(--obsidian);
+}
+
+.chain-stage--reached .chain-marker {
+  background: var(--acid);
+  border-color: var(--acid);
+}
+/* A gap is hollow and warning-coloured: something is missing here. */
+.chain-stage--gap .chain-marker {
+  border-color: var(--hazard);
+  border-style: dashed;
+  background: var(--obsidian);
+}
+/* Ahead is simply quiet. Nothing is wrong, it has not happened. */
+.chain-stage--ahead { opacity: 0.45; }
+
+.chain-stage-title {
+  margin: 0 0 var(--s-1);
+  font-size: var(--t-body);
+  font-weight: 600;
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+}
+.chain-state {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.chain-stage--gap .chain-state { color: var(--hazard); }
+
+.chain-desc,
+.chain-meta {
+  margin: 0 0 var(--s-1);
+  color: var(--muted);
+  font-size: var(--t-body);
+  max-width: 68ch;
+}
+.chain-meta { font-family: var(--font-mono); font-size: var(--t-micro); }
+
+.chain-events {
+  list-style: none;
+  margin: var(--s-2) 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-1);
+}
+.chain-event {
+  display: inline-flex;
+  gap: var(--s-2);
+  align-items: baseline;
+  padding: 1px var(--s-2);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-xs);
+  font-size: var(--t-micro);
+}
+.chain-event-time { font-family: var(--font-mono); color: var(--muted); }
+.chain-event-type { text-transform: capitalize; }
+.chain-event--critical { border-color: var(--sev-critical-dim); background: var(--sev-critical-dim); }
+.chain-event--high { border-color: var(--sev-high-dim); }
+.chain-event--more { color: var(--muted); border-style: dashed; }
+
+.chain-warn {
+  margin: var(--s-2) 0 0;
+  padding: var(--s-2) var(--s-3);
+  border-left: 2px solid var(--hazard);
+  background: var(--hazard-dim);
+  color: var(--text);
+  font-size: var(--t-body);
+  max-width: 66ch;
+}
+
+.chain-next {
+  margin: 0 0 var(--s-3);
+  padding: var(--s-3);
+  border: 1px solid var(--violet-dim);
+  border-left: 2px solid var(--violet);
+  border-radius: var(--r-sm);
+  background: var(--violet-dim);
+  font-size: var(--t-body);
+  max-width: 72ch;
+}
+
+.chain-unmapped,
+.chain-caveat {
+  margin: 0 0 var(--s-2);
+  color: var(--muted);
+  font-size: var(--t-micro);
+  max-width: 78ch;
+}

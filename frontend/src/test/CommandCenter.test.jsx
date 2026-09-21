@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen, act, within } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
-import { CommandCenter } from '../pages/CommandCenter.jsx';
+import App from '../App.jsx';
 
 /**
  * A fake socket client.
@@ -32,9 +32,9 @@ function fakeClient() {
 
 const mount = () => {
   const client = fakeClient();
-  const view = render(
-    <CommandCenter socketOptions={{ createClient: () => client }} />
-  );
+  // The whole application, so the shell's header, routing and single
+  // shared connection are exercised on the same path production uses.
+  const view = render(<App socketOptions={{ createClient: () => client }} />);
   return { client, view };
 };
 
