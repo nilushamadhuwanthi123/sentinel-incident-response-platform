@@ -25,14 +25,28 @@ export const TICK_MS = 1000;
  */
 export const BUFFER_SIZE = 60;
 
+let activeIo = null;
+const globalBuffer = [];
+
+/**
+ * Broadcast an event to all connected sockets and save it to the replay buffer.
+ */
+export function broadcast(channel, payload) {
+  globalBuffer.push({ channel, payload });
+  if (globalBuffer.length > BUFFER_SIZE) globalBuffer.shift();
+  if (activeIo) {
+    activeIo.emit(channel, payload);
+  }
+}
+
 export function registerSocketHandlers(io, options = {}) {
-  const buffer = [];
+  activeIo = io;
   let clients = 0;
   let timer = null;
 
   const record = (channel, payload) => {
-    buffer.push({ channel, payload });
-    if (buffer.length > BUFFER_SIZE) buffer.shift();
+    globalBuffer.push({ channel, payload });
+    if (globalBuffer.length > BUFFER_SIZE) globalBuffer.shift();
   };
 
   const simulator = createSimulator({
@@ -68,14 +82,23 @@ export function registerSocketHandlers(io, options = {}) {
     socket.emit('system:ready', {
       at: new Date().toISOString(),
       simulated: true,
-      bufferedEvents: buffer.length,
+      bufferedEvents: globalBuffer.length,
     });
 
     // Replay the recent past so the screen is not empty on arrival. Marked
     // `replayed` so the UI can render it as context rather than as things
     // happening right now.
-    buffer.forEach(({ channel, payload }) => {
+    globalBuffer.forEach(({ channel, payload }) => {
       socket.emit(channel, { ...payload, replayed: true });
+    });
+
+    // Support room subscription for targeted incidents or services
+    socket.on('subscribe:incident', (incidentId) => {
+      if (incidentId) socket.join(`incident:${incidentId}`);
+    });
+
+    socket.on('unsubscribe:incident', (incidentId) => {
+      if (incidentId) socket.leave(`incident:${incidentId}`);
     });
 
     // The clock only runs while somebody is watching. A simulation ticking
@@ -96,8 +119,9 @@ export function registerSocketHandlers(io, options = {}) {
       return clients;
     },
     get buffered() {
-      return buffer.length;
+      return globalBuffer.length;
     },
+    broadcast,
     stop: stopClock,
   };
 }
