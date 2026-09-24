@@ -10,6 +10,7 @@
 [![React](https://img.shields.io/badge/React-18-1f2418?logo=react&logoColor=C7F000)](https://react.dev)
 [![Node](https://img.shields.io/badge/Node-20%2B-1f2418?logo=node.js&logoColor=76E06F)](https://nodejs.org)
 [![Socket.IO](https://img.shields.io/badge/Socket.IO-realtime-1f2418?logo=socketdotio&logoColor=D4A72C)](https://socket.io)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-open-C7F000?logoColor=0B0D0A)](https://nilushamadhuwanthi123.github.io/sentinel-incident-response-platform/)
 [![License](https://img.shields.io/badge/License-MIT-1f2418)](LICENSE)
 
 </div>
@@ -61,18 +62,22 @@ the platform does not have.
 
 ## Status
 
-Bootstrap. The design system, severity scale and CI pipeline are in place;
-each operational system arrives on its own branch behind its own issue —
-see [Issues](https://github.com/nilushamadhuwanthi123/sentinel-incident-response-platform/issues).
+Shipped and deployed. Every system below reached `main` through its own issue,
+branch and reviewed pull request.
 
 | | |
 |---|---|
 | Design tokens & severity scale | ✅ merged |
 | CI (lint · test · build) | ✅ merged |
-| Command Center · Radar · Topology | in progress |
-| Risk · Correlation · Recommendation engines | in progress |
-| Investigation · Forensics · Simulation | in progress |
-| Deployment | not yet — URLs land here when live |
+| Command Center · Radar · Topology | ✅ merged |
+| Risk · Correlation · Recommendation engines | ✅ merged |
+| Investigation · Forensics · Simulation | ✅ merged |
+| Incident operations · Observability · Audit trail | ✅ merged |
+| Deployment | ✅ [live on GitHub Pages](https://nilushamadhuwanthi123.github.io/sentinel-incident-response-platform/) |
+
+The deployed build runs with no backend configured, so it executes the
+server's own simulator in the browser — the same module, not a second copy of
+it. Every screen says so before it says anything else.
 
 ---
 
